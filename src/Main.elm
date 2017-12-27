@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, Attribute, div, input, text, h2, button, span)
+import Html exposing (Html, Attribute, div, input, text, h1, h2, button, span)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Gravatar exposing (defaultOptions, img)
@@ -8,6 +8,8 @@ import Time exposing (second, Time, inSeconds)
 import Maybe
 import Random.List
 import Random
+import Task
+import Audio
 
 
 main : Program Never Model Msg
@@ -45,7 +47,7 @@ type alias Model =
 
 roundLength : number
 roundLength =
-    75
+    5
 
 
 gravatarOptions : Gravatar.Options
@@ -96,6 +98,7 @@ type Msg
     | Reset
     | Select ( Maybe Mobber, List Mobber )
     | Next
+    | Noop
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -159,10 +162,23 @@ update msg model =
                     else
                         mobbersLeft
             in
-                { model | current = mob, state = Selecting, mobbersLeft = ml } => Cmd.none
+                { model | current = mob, state = Selecting, mobbersLeft = ml } => Task.attempt doNothing (loadAndPlaySound "dist/Alarm.mp3")
 
         Next ->
             model => Random.generate Select (Random.List.choose model.mobbers)
+
+        Noop ->
+            model => Cmd.none
+
+
+doNothing : Result error value -> Msg
+doNothing result =
+    case result of
+        Ok _ ->
+            Noop
+
+        Err _ ->
+            Noop
 
 
 
@@ -173,29 +189,83 @@ view : Model -> Html Msg
 view model =
     case model.state of
         Enter ->
-            div []
-                [ div []
-                    [ h2 [] [ text "Deltagare" ]
-                    , deltagarlista model.mobbers
-                    , inputform model
-                    , button [ onClick Next, disabled model.running ] [ text "Starta!" ]
-                    ]
+            div [ class "page" ]
+                [ h1 [] [ text "Mobbing" ]
+                , inputform model
+                , deltagarlista model.mobbers
+                , largeButton Next "Nästa"
                 ]
 
         Running ->
-            div []
-                [ deltagare (Maybe.withDefault defaultUser model.current)
-                , button [ onClick Start, disabled model.running ] [ text "Starta!" ]
-                , button [ onClick Pause, disabled (not model.running) ] [ text "Pausa" ]
-                , button [ onClick Reset ] [ text "Återställ" ]
-                , div [] [ text (model.remaining |> toMinutesAndSeconds) ]
+            div [ class "page2" ]
+                [ div [ class "next" ] [ text "Mobba!" ]
+                , litenDeltagare 1 (Maybe.withDefault defaultUser model.current)
+                , div [ class "counter" ] [ text (model.remaining |> toMinutesAndSeconds) ]
+                , smallButton Start model.running "Starta!"
+                , smallButton Pause (not model.running) "Pausa"
+                , smallButton Reset True "Återställ"
                 ]
 
         Selecting ->
-            div []
-                [ deltagare (Maybe.withDefault defaultUser model.current)
-                , div [] [ button [ onClick Start ] [ text "Starta!" ] ]
+            div [ class "page3" ]
+                [ div [ class "next" ] [ text "Nästa mobbare" ]
+                , storDeltagare (Maybe.withDefault defaultUser model.current)
+                , largeButton Start "Starta!"
                 ]
+
+
+smallButton : Msg -> Bool -> String -> Html Msg
+smallButton msg d s =
+    span [ class "small" ] [ Html.a [ href "#", class "button", onClick msg, disabled d ] [ span [] [ text s ] ] ]
+
+
+largeButton : Msg -> String -> Html Msg
+largeButton msg s =
+    div [] [ Html.a [ href "#", class "button", onClick msg ] [ span [] [ text s ] ] ]
+
+
+storDeltagare : Mobber -> Html Msg
+storDeltagare mobber =
+    div [ class "largeimg" ]
+        [ img gravatarOptions mobber.email
+        , div [ class "nametag" ] [ text mobber.name ]
+        ]
+
+
+litenDeltagare : Int -> Mobber -> Html Msg
+litenDeltagare i mobber =
+    div []
+        [ case i % 2 == 0 of
+            True ->
+                div [ class "textbox", class "l" ]
+                    [ div [] [ text mobber.name ]
+                    , img gravatarOptions mobber.email
+                    ]
+
+            False ->
+                div [ class "textbox", class "r" ]
+                    [ img gravatarOptions mobber.email
+                    , div [] [ text mobber.name ]
+                    ]
+        ]
+
+
+deltagarlista : List Mobber -> Html Msg
+deltagarlista mobbers =
+    div [ class "deltagarlista" ] (List.indexedMap litenDeltagare mobbers)
+
+
+inputform : Model -> Html Msg
+inputform model =
+    div [ class "newuser" ]
+        [ input [ placeholder "Namn", onInput ChangeName, value model.name ] []
+        , input [ placeholder "E-post", onInput ChangeEmail, value model.email ] []
+        , div [ class "small" ] [ Html.a [ href "#", class "button", onClick AddMobber ] [ span [] [ text "Lägg till" ] ] ]
+        ]
+
+
+
+-- Util
 
 
 toMinutesAndSeconds : Int -> String
@@ -216,23 +286,6 @@ toMinutesAndSeconds t =
         m ++ ":" ++ ss
 
 
-deltagare : Mobber -> Html Msg
-deltagare mobber =
-    div []
-        [ img gravatarOptions mobber.email
-        , span [] [ text mobber.name ]
-        ]
-
-
-deltagarlista : List Mobber -> Html Msg
-deltagarlista mobbers =
-    div [] (List.map deltagare mobbers)
-
-
-inputform : Model -> Html Msg
-inputform model =
-    div []
-        [ input [ placeholder "Namn", onInput ChangeName, value model.name ] []
-        , input [ placeholder "E-post", onInput ChangeEmail, value model.email ] []
-        , button [ onClick AddMobber ] [ text "+" ]
-        ]
+loadAndPlaySound : String -> Task.Task String ()
+loadAndPlaySound soundUrl =
+    Audio.loadSound soundUrl |> Task.andThen (Task.mapError (\_ -> "") << Audio.playSound Audio.defaultPlaybackOptions)

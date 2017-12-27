@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>    
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Eczar|Trocchi|Work+Sans|Pacifico" rel="stylesheet">
+    <script src="dist/mobbing.js"></script>
+    <style>
+        /* Startsida */
+
+        .deltagarlista {
+            max-width: 800px;
+            grid-column: 1;
+            grid-row: 3;
+            display: flex;
+            flex-direction: column;
+            align-content: flex-start;
+            padding-bottom: 10rem;
+        }
+
+        h1 {
+            line-height: 50%;
+            margin-bottom: 12rem;
+            max-width: 800px;
+            grid-column: 1;
+            grid-row: 1;
+            font-size: 12rem;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: 'Pacifico', serif;
+            color: antiquewhite;
+            text-shadow: 2px 2px #ff0000;
+        }
+
+        img {
+            max-height: 6rem;
+            border-radius: 50%;
+            border: 0.5vw solid antiquewhite;
+        }
+
+        .textbox {
+            height: 8rem;
+            position: relative;
+            font-size: 6rem;
+            display: flex;
+            overflow: hidden;
+            flex-direction: row;
+            align-items: center;
+            font-family: 'Eczar', serif;
+            border: 0.5rem antiquewhite solid;
+            animation: fadein 1s;
+        }
+
+        .l {
+            color: cornflowerblue;
+            justify-content: flex-end;
+            transform: rotate(-0.01turn);
+            padding-right: 1rem;
+            background: linear-gradient(135deg, #ff0000 0%, #ffff00 100%);
+        }
+
+        .r {
+            color: antiquewhite;
+            justify-content: flex-start;
+            transform: rotate(0.01turn);
+            padding-left: 1rem;            
+            background: linear-gradient(135deg, #1900ff 0%, #cc00aa 100%);
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .newuser {
+            grid-column: 1;
+            grid-row: 2;
+            margin-bottom: 10rem;
+        }
+
+        .newuser>input {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 3rem;
+            border-radius: 10px;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .small>.button {
+            font-size: 3rem;
+        }
+
+        .small>.button span {
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-top: 1rem;
+        }
+
+        .page {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: auto;
+            grid-template-rows: 15% 20% auto, 10%;
+        }
+
+        body {
+            text-align: center;
+            background: linear-gradient(135deg, #b4ddb4 0%, #83c783 17%, #52b152 33%, #008a00 67%, #005700 83%, #002400 100%);
+            height: 100%;
+            margin: 0;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .button {
+            margin: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2rem 0 #c5376d, 0 15px 20px rgba(0, 0, 0, .35);
+            transition: box-shadow .1s ease-in-out;
+            font-size: 10rem;
+            color: antiquewhite;
+            animation: fadein 1s;
+        }
+
+        .button span {
+            display: inline-block;
+            padding: 2rem 3rem;
+            background-color: #ec528d;
+            background-image: linear-gradient(hsla(338, 90%, 80%, .8), hsla(338, 90%, 70%, .2));
+            border-radius: 1rem;
+            box-shadow: inset 0 -1px 1px rgba(255, 255, 255, .15);
+            font-family: 'Pacifico', Arial, sans-serif;
+            line-height: 1;
+            text-shadow: 0 -1px 1px rgba(175, 49, 95, .7);
+            transition: background-color .2s ease-in-out, transform .1s ease-in-out;
+        }
+
+        .button:hover span {
+            background-color: #f794ba;
+            text-shadow: 0 -4px 4px rgba(175, 49, 95, .9), 0 0 5px rgba(255, 255, 255, .8);
+        }
+
+        .button:active,
+        .button:focus {
+            box-shadow: 0 2rem 0 #c5376d, 0 12px 10px rgba(0, 0, 0, .3);
+        }
+
+        .button:active span {
+            transform: translate(0, 1rem);
+        }
+
+        .button:disabled {
+            color: grey;
+        }
+
+        .largeimg>img {
+            max-height: 100%;
+            border: 1rem solid antiquewhite;
+            margin-bottom: 1rem;
+            animation: fadein 7s;
+        }
+
+        /* välj person */
+
+        .nametag {
+            border: 0.5rem solid antiquewhite;
+            background: linear-gradient(135deg, #1900ff 0%, #cc00aa 100%);
+            font-family: 'Eczar', serif;
+            font-size: 8rem;
+            color: antiquewhite;
+            height: 10rem;
+            line-height: 135%;
+            margin-bottom: 5rem;
+            transform: rotate(-0.02turn);
+            animation: fadein 7s;
+        }
+
+        .next {
+            font-family: 'Pacifico', Arial, sans-serif;
+            font-size: 5rem;
+            color: antiquewhite;
+            animation: fadein 1s;
+        }
+
+        .page2 {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 800px;
+            height: 100vh;
+            animation: fadein 1s;
+        }
+
+        /* Räkna */
+
+        .page3 {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 800px;
+            height: 100vh;
+            animation: fadein 1s;
+        }
+
+        .counter {
+            font-family: 'Eczar', serif;
+            font-size: 14rem;
+            color: antiquewhite;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="text/javascript">Elm.Main.fullscreen()</script>
+</body>
+
+</html>
